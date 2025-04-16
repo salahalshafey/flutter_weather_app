@@ -1,35 +1,74 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import '../utils/date_formatter.dart';
 import 'detail_item.dart';
 
-class HumidityCloudCard extends StatelessWidget {
-  final int humidity;
-  final int cloudiness;
+class HumidityCloudsCard extends StatelessWidget {
+  final Map<String, dynamic> currentWeather;
 
-  const HumidityCloudCard({
-    super.key,
-    required this.humidity,
-    required this.cloudiness,
-  });
+  const HumidityCloudsCard({
+    Key? key,
+    required this.currentWeather,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DetailItem(
-              icon: FontAwesomeIcons.droplet,
-              value: '$humidity%',
-              label: 'Humidity',
+            const Text(
+              'Humidity & Clouds',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
             ),
-            DetailItem(
-              icon: FontAwesomeIcons.cloud,
-              value: '$cloudiness%',
-              label: 'Cloudiness',
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DetailItem(
+                    label: 'Humidity',
+                    value: '${currentWeather['main']['humidity']}%',
+                  ),
+                ),
+                Expanded(
+                  child: DetailItem(
+                    label: 'Cloud Cover',
+                    value: '${currentWeather['clouds']['all']}%',
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DetailItem(
+                    label: 'Sunrise',
+                    value: DateFormatter.formatTime(
+                      DateTime.fromMillisecondsSinceEpoch(
+                          currentWeather['sys']['sunrise'] * 1000),
+                    ),
+                  ),
+                ),
+                Expanded(
+                  child: DetailItem(
+                    label: 'Sunset',
+                    value: DateFormatter.formatTime(
+                      DateTime.fromMillisecondsSinceEpoch(
+                          currentWeather['sys']['sunset'] * 1000),
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

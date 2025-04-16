@@ -4,21 +4,25 @@ import 'providers/theme_provider.dart';
 import 'screens/weather_dashboard_screen.dart';
 
 class WeatherApp extends StatelessWidget {
-  const WeatherApp({super.key});
+  const WeatherApp({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
-      child: Consumer<ThemeProvider>(
-        builder: (context, themeProvider, _) {
-          return MaterialApp(
-            title: 'Weather App',
-            theme: themeProvider.theme,
-            home: const WeatherDashboardScreen(),
-          );
-        },
-      ),
+    return ChangeNotifierProvider<ThemeProvider>(
+      create: (context) => ThemeProvider()..initialize(),
+      builder: (context, _) {
+        // Listen to theme changes
+        final themeProvider = context.watch<ThemeProvider>();
+
+        return MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: 'Weather Dashboard',
+          theme: themeProvider.currentTheme,
+          home: WeatherDashboardScreen(
+            themeProvider: themeProvider,
+          ),
+        );
+      },
     );
   }
 }

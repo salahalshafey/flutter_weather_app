@@ -2,39 +2,56 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class WeatherIcons {
-  static IconData getWeatherIcon(String condition) {
-    switch (condition.toLowerCase()) {
-      case 'clear':
+  static IconData getWeatherIcon(String main) {
+    switch (main) {
+      case 'Clear':
         return FontAwesomeIcons.sun;
-      case 'clouds':
+      case 'Clouds':
         return FontAwesomeIcons.cloud;
-      case 'rain':
+      case 'Rain':
+      case 'Drizzle':
         return FontAwesomeIcons.cloudRain;
-      case 'drizzle':
-        return FontAwesomeIcons.cloudRain;
-      case 'thunderstorm':
-        return FontAwesomeIcons.cloudBolt;
-      case 'snow':
+      case 'Thunderstorm':
+        return FontAwesomeIcons.bolt;
+      case 'Snow':
         return FontAwesomeIcons.snowflake;
-      case 'mist':
-      case 'smoke':
-      case 'haze':
-      case 'dust':
-      case 'fog':
+      case 'Mist':
+      case 'Smoke':
+      case 'Haze':
+      case 'Dust':
+      case 'Fog':
+      case 'Sand':
+      case 'Ash':
         return FontAwesomeIcons.smog;
+      case 'Squall':
+        return FontAwesomeIcons.wind;
+      case 'Tornado':
+        return FontAwesomeIcons.tornado;
       default:
         return FontAwesomeIcons.cloud;
     }
   }
 
-  static String getWindDirection(int degree) {
-    if (degree >= 337.5 || degree < 22.5) return 'N';
-    if (degree >= 22.5 && degree < 67.5) return 'NE';
-    if (degree >= 67.5 && degree < 112.5) return 'E';
-    if (degree >= 112.5 && degree < 157.5) return 'SE';
-    if (degree >= 157.5 && degree < 202.5) return 'S';
-    if (degree >= 202.5 && degree < 247.5) return 'SW';
-    if (degree >= 247.5 && degree < 292.5) return 'W';
-    return 'NW';
+  static String getWindDirection(int degrees) {
+    const directions = [
+      'N',
+      'NNE',
+      'NE',
+      'ENE',
+      'E',
+      'ESE',
+      'SE',
+      'SSE',
+      'S',
+      'SSW',
+      'SW',
+      'WSW',
+      'W',
+      'WNW',
+      'NW',
+      'NNW'
+    ];
+    int index = ((degrees / 22.5) + 0.5).floor() % 16;
+    return directions[index];
   }
 }

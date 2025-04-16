@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../constants/app_colors.dart';
 
 class ThemeProvider extends ChangeNotifier {
@@ -6,34 +7,43 @@ class ThemeProvider extends ChangeNotifier {
 
   bool get isDarkMode => _isDarkMode;
 
-  void toggleTheme() {
-    _isDarkMode = !_isDarkMode;
+  Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    _isDarkMode = prefs.getBool('darkMode') ?? false;
     notifyListeners();
   }
 
-  ThemeData get theme => _isDarkMode ? _darkTheme : _lightTheme;
+  Future<void> toggleTheme() async {
+    _isDarkMode = !_isDarkMode;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('darkMode', _isDarkMode);
+    notifyListeners();
+  }
 
-  static final _darkTheme = ThemeData(
-    brightness: Brightness.dark,
-    scaffoldBackgroundColor: AppColors.darkBackground,
-    cardColor: AppColors.darkCard,
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.darkText),
-      bodyMedium: TextStyle(color: AppColors.darkText),
-      titleLarge: TextStyle(color: AppColors.darkText),
-      titleMedium: TextStyle(color: AppColors.darkSecondaryText),
-    ),
-  );
-
-  static final _lightTheme = ThemeData(
-    brightness: Brightness.light,
-    scaffoldBackgroundColor: AppColors.lightBackground,
-    cardColor: Colors.white,
-    textTheme: const TextTheme(
-      bodyLarge: TextStyle(color: AppColors.lightText),
-      bodyMedium: TextStyle(color: AppColors.lightText),
-      titleLarge: TextStyle(color: AppColors.lightText),
-      titleMedium: TextStyle(color: AppColors.lightSecondaryText),
-    ),
-  );
+  ThemeData get currentTheme {
+    return ThemeData(
+      primarySwatch: Colors.blue,
+      brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+      scaffoldBackgroundColor:
+          _isDarkMode ? AppColors.darkBackground : AppColors.lightBackground,
+      cardColor:
+          _isDarkMode ? AppColors.darkCardColor : AppColors.lightCardColor,
+      textTheme: TextTheme(
+        bodyLarge: TextStyle(
+          color: _isDarkMode
+              ? AppColors.darkTextPrimary
+              : AppColors.lightTextPrimary,
+        ),
+        bodyMedium: TextStyle(
+          color: _isDarkMode
+              ? AppColors.darkTextSecondary
+              : AppColors.lightTextSecondary,
+        ),
+      ),
+      colorScheme: ColorScheme.fromSwatch(
+        primarySwatch: Colors.blue,
+        brightness: _isDarkMode ? Brightness.dark : Brightness.light,
+      ),
+    );
+  }
 }

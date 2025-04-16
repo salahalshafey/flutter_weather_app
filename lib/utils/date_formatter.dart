@@ -1,7 +1,7 @@
 import 'package:intl/intl.dart';
 
 class DateFormatter {
-  static String formatFullDateTime(DateTime date) {
+  static String formatDate(DateTime date) {
     return DateFormat('EEEE, MMMM d, y - hh:mm a').format(date);
   }
 
@@ -11,5 +11,9 @@ class DateFormatter {
 
   static String formatDay(DateTime date) {
     return DateFormat('EEE, MMM d').format(date);
+  }
+
+  static String formatSimpleDate(DateTime date) {
+    return DateFormat('yyyy-MM-dd').format(date);
   }
 }

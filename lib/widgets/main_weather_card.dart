@@ -1,80 +1,100 @@
 import 'package:flutter/material.dart';
-import '../models/weather_data.dart';
-import '../utils/weather_icons.dart';
 import '../utils/date_formatter.dart';
+import '../utils/weather_icons.dart';
 
 class MainWeatherCard extends StatelessWidget {
-  final WeatherData weather;
+  final Map<String, dynamic> currentWeather;
 
   const MainWeatherCard({
-    super.key,
-    required this.weather,
-  });
+    Key? key,
+    required this.currentWeather,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.all(16.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      '${weather.cityName}, ${weather.country}',
-                      style: Theme.of(context).textTheme.titleLarge,
+                Flexible(
+                  child: Text(
+                    '${currentWeather['name']}, ${currentWeather['sys']['country']}',
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
                     ),
-                    const SizedBox(height: 4),
-                    Text(
-                      DateFormatter.formatFullDateTime(weather.timestamp),
-                      style: Theme.of(context).textTheme.titleMedium,
-                    ),
-                  ],
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
-                Icon(
-                  WeatherIcons.getWeatherIcon(weather.main),
-                  size: 48,
+                Flexible(
+                  child: Text(
+                    DateFormatter.formatDate(
+                      DateTime.fromMillisecondsSinceEpoch(
+                          currentWeather['dt'] * 1000),
+                    ),
+                    style: Theme.of(context).textTheme.bodyMedium,
+                    overflow: TextOverflow.ellipsis,
+                  ),
                 ),
               ],
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  '${weather.temperature.round()}°',
-                  style: Theme.of(context).textTheme.displayLarge,
-                ),
-                Text(
-                  'C',
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
-              ],
-            ),
-            Text(
-              weather.description.toUpperCase(),
-              style: Theme.of(context).textTheme.titleMedium,
-            ),
-            const SizedBox(height: 16),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Feels like ${weather.feelsLike.round()}°C',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-                const Text(' | '),
-                Text(
-                  'H:${weather.maxTemp.round()}° L:${weather.minTemp.round()}°',
-                  style: Theme.of(context).textTheme.bodyMedium,
-                ),
-              ],
+            Center(
+              child: Column(
+                children: [
+                  Icon(
+                    WeatherIcons.getWeatherIcon(
+                        currentWeather['weather'][0]['main']),
+                    size: 80,
+                    color: Colors.blue,
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    '${currentWeather['main']['temp'].round()}°C',
+                    style: const TextStyle(
+                      fontSize: 48,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${currentWeather['weather'][0]['description']}',
+                    style: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  Text(
+                    'Feels like: ${currentWeather['main']['feels_like'].round()}°C',
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Min: ${currentWeather['main']['temp_min'].round()}°C',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                      const SizedBox(width: 16),
+                      Text(
+                        'Max: ${currentWeather['main']['temp_max'].round()}°C',
+                        style: Theme.of(context).textTheme.bodyMedium,
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             ),
           ],
         ),

@@ -1,38 +1,70 @@
 import 'package:flutter/material.dart';
-import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import '../utils/weather_icons.dart';
 import 'detail_item.dart';
 
 class WindPressureCard extends StatelessWidget {
-  final double windSpeed;
-  final int windDegree;
-  final int pressure;
+  final Map<String, dynamic> currentWeather;
 
   const WindPressureCard({
-    super.key,
-    required this.windSpeed,
-    required this.windDegree,
-    required this.pressure,
-  });
+    Key? key,
+    required this.currentWeather,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Card(
-      margin: const EdgeInsets.symmetric(horizontal: 16.0),
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            DetailItem(
-              icon: FontAwesomeIcons.wind,
-              value: '${windSpeed.toStringAsFixed(1)} m/s',
-              label: WeatherIcons.getWindDirection(windDegree),
+            const Text(
+              'Wind & Pressure',
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.blue,
+              ),
             ),
-            DetailItem(
-              icon: FontAwesomeIcons.gauge,
-              value: '$pressure hPa',
-              label: 'Pressure',
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DetailItem(
+                    label: 'Wind Speed',
+                    value: '${currentWeather['wind']['speed']} m/s',
+                  ),
+                ),
+                Expanded(
+                  child: DetailItem(
+                    label: 'Wind Direction',
+                    value: WeatherIcons.getWindDirection(
+                        currentWeather['wind']['deg'] as int),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Row(
+              children: [
+                Expanded(
+                  child: DetailItem(
+                    label: 'Pressure',
+                    value: '${currentWeather['main']['pressure']} hPa',
+                  ),
+                ),
+                Expanded(
+                  child: DetailItem(
+                    label: 'Visibility',
+                    value:
+                        '${(currentWeather['visibility'] / 1000).toStringAsFixed(1)} km',
+                  ),
+                ),
+              ],
             ),
           ],
         ),

@@ -1,85 +1,49 @@
 class WeatherData {
-  final String cityName;
-  final String country;
-  final DateTime timestamp;
-  final double temperature;
-  final double feelsLike;
-  final double minTemp;
-  final double maxTemp;
-  final String description;
-  final String main;
-  final double windSpeed;
-  final int windDegree;
-  final int pressure;
-  final int visibility;
-  final int humidity;
-  final int cloudiness;
-  final DateTime sunrise;
-  final DateTime sunset;
+  final Map<String, dynamic> currentWeather;
+  final Map<String, dynamic> forecastData;
 
   WeatherData({
-    required this.cityName,
-    required this.country,
-    required this.timestamp,
-    required this.temperature,
-    required this.feelsLike,
-    required this.minTemp,
-    required this.maxTemp,
-    required this.description,
-    required this.main,
-    required this.windSpeed,
-    required this.windDegree,
-    required this.pressure,
-    required this.visibility,
-    required this.humidity,
-    required this.cloudiness,
-    required this.sunrise,
-    required this.sunset,
+    required this.currentWeather,
+    required this.forecastData,
   });
 
-  factory WeatherData.fromJson(Map<String, dynamic> json) {
+  factory WeatherData.fromJson({
+    required Map<String, dynamic> currentWeather,
+    required Map<String, dynamic> forecastData,
+  }) {
     return WeatherData(
-      cityName: json['name'],
-      country: json['sys']['country'],
-      timestamp: DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000),
-      temperature: json['main']['temp'].toDouble(),
-      feelsLike: json['main']['feels_like'].toDouble(),
-      minTemp: json['main']['temp_min'].toDouble(),
-      maxTemp: json['main']['temp_max'].toDouble(),
-      description: json['weather'][0]['description'],
-      main: json['weather'][0]['main'],
-      windSpeed: json['wind']['speed'].toDouble(),
-      windDegree: json['wind']['deg'],
-      pressure: json['main']['pressure'],
-      visibility: json['visibility'],
-      humidity: json['main']['humidity'],
-      cloudiness: json['clouds']['all'],
-      sunrise:
-          DateTime.fromMillisecondsSinceEpoch(json['sys']['sunrise'] * 1000),
-      sunset: DateTime.fromMillisecondsSinceEpoch(json['sys']['sunset'] * 1000),
+      currentWeather: currentWeather,
+      forecastData: forecastData,
     );
   }
-}
 
-class ForecastData {
-  final DateTime date;
-  final double temperature;
-  final String description;
-  final String main;
+  List<Map<String, dynamic>> getDailyForecasts() {
+    if (forecastData.isEmpty) return [];
 
-  ForecastData({
-    required this.date,
-    required this.temperature,
-    required this.description,
-    required this.main,
-  });
+    Map<String, dynamic> dailyForecasts = {};
+    List<dynamic> forecastList = forecastData['list'];
 
-  factory ForecastData.fromJson(Map<String, dynamic> json) {
-    return ForecastData(
-      date: DateTime.fromMillisecondsSinceEpoch(json['dt'] * 1000),
-      temperature: json['main']['temp'].toDouble(),
-      description: json['weather'][0]['description'],
-      main: json['weather'][0]['main'],
-    );
+    for (var forecast in forecastList) {
+      DateTime date =
+          DateTime.fromMillisecondsSinceEpoch(forecast['dt'] * 1000);
+      String dateStr = '${date.year}-${date.month}-${date.day}';
+
+      if (!dailyForecasts.containsKey(dateStr) ||
+          (date.hour - 12).abs() <
+              (DateTime.fromMillisecondsSinceEpoch(
+                              dailyForecasts[dateStr]['dt'] * 1000)
+                          .hour -
+                      12)
+                  .abs()) {
+        dailyForecasts[dateStr] = forecast;
+      }
+    }
+
+    List<Map<String, dynamic>> result = [];
+    dailyForecasts.forEach((key, value) {
+      result.add(value);
+    });
+
+    return result.take(5).toList();
   }
 }
